@@ -4,12 +4,17 @@ This is a simple example that uses Azure Speech and Azure OpenAI Service to impl
 
 Copy `.env.example` to `.env`, and adapt the values:
 
-```dotenv
+```env
 OPENAI_BASE_URL=https://xxxxxxx.openai.azure.com/ # point to your Azure OpenAI Service URL
 OPENAI_API_KEY=xxxxx # fill in your Azure OpenAI Service API key
 OPENAI_DEPLOYMENT_NAME=text-davinci-003 # fill in your text-davinci-003 deployment name
 SPEECH_API_KEY=xxxx # fill in your Speech API key
 SPEECH_REGION=westeurope # adapt to your Speech API Azure region
+
+# optional parameters
+SPEECH_VOICE_NAME=de-DE-AmalaNeural # optional, defaults to de-DE-AmalaNeural
+LOCALE=de-DE # optional, defaults to de-DE
+INCLUDE_HISTORY=True # optional, defaults to True, which includes history in prompts for follow up questions
 ```
 
 Then install the dependencies and run the script:

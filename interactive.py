@@ -6,9 +6,9 @@ import azure.cognitiveservices.speech as speechsdk
 
 load_dotenv()
 
-language = "de-DE"
-speech_voice = "de-DE-AmalaNeural"
-include_history = True # if True, the past conversation is send to the prompt each time, if False, just the last question
+language = os.getenv("LOCALE", "de-DE")
+speech_voice = os.getenv("SPEECH_VOICE_NAME", "de-DE-AmalaNeural")
+include_history = os.getenv("INCLUDE_HISTORY", True)
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
 openai.api_base =  os.getenv("OPENAI_BASE_URL")
