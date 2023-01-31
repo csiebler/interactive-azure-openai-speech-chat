@@ -45,6 +45,7 @@ def recognize_speech_once():
         return result.text
     elif result.reason == speechsdk.ResultReason.NoMatch:
         print("No speech could be recognized")
+        return "No speech recognized"
     elif result.reason == speechsdk.ResultReason.Canceled:
         cancellation_details = result.cancellation_details
         print("Speech Recognition canceled: {}".format(cancellation_details.reason))
@@ -81,6 +82,8 @@ history = ""
 
 while (True):
     question = recognize_speech_once()
+    if (question.startswith("No speech recognized")):
+        continue
 
     # if question in lowercase starts with "beende die", then exit
     if question.lower().startswith("beende die"):
