@@ -8,6 +8,7 @@ load_dotenv()
 
 language = "de-DE"
 speech_voice = "de-DE-AmalaNeural"
+include_history = True # if True, the past conversation is send to the prompt each time, if False, just the last question
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
 openai.api_base =  os.getenv("OPENAI_BASE_URL")
@@ -32,7 +33,7 @@ def create_answer_with_openai(question):
     prompt = f"{question}. Antworte in einem Satz."
     response = openai.Completion.create(engine=deployment_id, prompt=prompt, max_tokens=250)
     completion = response['choices'][0]['text'].replace('\n', '').replace(' .', '.').strip()
-    print(completion)
+    print(f"OpenAI replied: {completion}")
     return completion
 
 def recognize_speech_once():
@@ -52,7 +53,18 @@ def recognize_speech_once():
 
 
 def synthesize_speech(text):
-    speech_synthesis_result = speech_synthesizer.speak_text_async(text).get()
+    ssml = f"""
+<speak version="1.0" xmlns="https://www.w3.org/2001/10/synthesis" xml:lang="en-US">
+  <voice name="{speech_voice}">
+    <prosody rate="+10.00%">
+        {text}
+    </prosody>
+  </voice>
+</speak>
+    """
+    speech_synthesis_result = speech_synthesizer.speak_ssml_async(ssml).get()
+    
+    # speech_synthesis_result = speech_synthesizer.speak_text_async(text).get()
 
     if speech_synthesis_result.reason == speechsdk.ResultReason.SynthesizingAudioCompleted:
         print("Speech synthesized for text [{}]".format(text))
@@ -65,12 +77,22 @@ def synthesize_speech(text):
                 print("Did you set the speech resource key and region values?")
                 
 
+history = ""
+
 while (True):
     question = recognize_speech_once()
+
     # if question in lowercase starts with "beende die", then exit
     if question.lower().startswith("beende die"):
         synthesize_speech("Ok, bis bald!")
         break
-    answer = create_answer_with_openai(question)
-    synthesize_speech(answer)
+    
+    if (include_history):
+        history += f"\n\n{question}"
+        answer = create_answer_with_openai(history)
+        history += f"\n\n{answer}"
+        print(f"###\nHISTORY:{history}\n###")
+    else:
+        answer = create_answer_with_openai(question)
 
+    synthesize_speech(answer)
