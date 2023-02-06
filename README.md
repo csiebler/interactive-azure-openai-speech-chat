@@ -21,5 +21,15 @@ Then install the dependencies and run the script:
 
 ```console
 pip install -r requirements.txt
-python interactive.py
+python sample.py
 ```
+
+## UI support
+
+If you want a simple web interface to visualize the chat conversation, run the included `streamlit` UI:
+
+```console
+streamlit run sample.py
+```
+
+Please not that the STT/TTS does not run client-side, so this application can only run on localhost.

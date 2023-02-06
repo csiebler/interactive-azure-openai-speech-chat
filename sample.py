@@ -1,6 +1,8 @@
 import os
 import json
 import openai
+import streamlit as st
+from streamlit_chat import message
 from dotenv import load_dotenv
 import azure.cognitiveservices.speech as speechsdk
 
@@ -28,6 +30,7 @@ speech_config.speech_synthesis_language = language
 speech_config.speech_synthesis_voice_name = speech_voice
 speech_synthesizer = speechsdk.SpeechSynthesizer(speech_config=speech_config, audio_config=audio_config)
 
+st.title('Azure OpenAI Service Demo')
 
 def create_answer_with_openai(question):
     prompt = f"{question}. Antworte in einem Satz."
@@ -85,9 +88,14 @@ while (True):
     if (question.startswith("No speech recognized")):
         continue
 
-    # if question in lowercase starts with "beende die", then exit
-    if question.lower().startswith("beende die"):
-        synthesize_speech("Ok, bis bald!")
+    # show message when using streamlit
+    message(question, is_user=True, avatar_style="micah", seed=123)
+
+    # if question in lowercase starts with "beend"e, then exit
+    if question.lower().startswith("beend"):
+        answer = "Ok, bis bald!"
+        message(answer, avatar_style="micah", seed=124)
+        synthesize_speech(answer)
         break
     
     if (include_history):
@@ -95,7 +103,14 @@ while (True):
         answer = create_answer_with_openai(history)
         history += f"\n\n{answer}"
         print(f"###\nHISTORY:{history}\n###")
+        # TODO: If history is > 2000 words, then start deleting the first lines
     else:
         answer = create_answer_with_openai(question)
 
+    # show message when using streamlit
+    message(answer, avatar_style="micah", seed=124)
+    
     synthesize_speech(answer)
+
+print("Stopping...")
+st.stop()
